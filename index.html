@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeWork - Prevención de Riesgos</title>
+    <meta name="theme-color" content="#1f2937">
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22SafeWork%22,%22short_name%22:%22SafeWork%22,%22start_url%22:%22/%22,%22display%22:%22standalone%22,%22background_color%22:%22%231f2937%22,%22theme_color%22:%22%231f2937%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%2310b981'/%3E%3Cpath d='M30 50l10 10 30-30' stroke='white' stroke-width='4' fill='none'/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .points {
+            background: #10b981;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            background: white;
+            color: #1f2937;
+            border-bottom: 3px solid #10b981;
+        }
+
+        .content {
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .report-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .report-type {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .report-type.unsafe-condition {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .report-type.unsafe-action {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .report-date {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .report-description {
+            margin-bottom: 10px;
+            color: #374151;
+        }
+
+        .report-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-resolved {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .worker-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .worker-info h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .worker-info p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .points-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .points-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .points-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .points-btn.add {
+            background: #10b981;
+            color: white;
+        }
+
+        .points-btn.subtract {
+            background: #ef4444;
+            color: white;
+        }
+
+        .worker-points {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                max-width: 100%;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ SafeWork</h1>
+            <p>Prevención de Riesgos Laborales</p>
+            <div class="user-info">
+                <div>
+                    <strong id="userName">Juan Pérez</strong>
+                    <br><small id="userRole">Trabajador</small>
+                </div>
+                <div class="points" id="userPoints">85 pts</div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="nav-item active" onclick="showSection('reports')">📝 Reportar</button>
+            <button class="nav-item" onclick="showSection('history')">📋 Historial</button>
+            <button class="nav-item" onclick="showSection('manage')" id="manageTab" style="display: none;">👥 Gestionar</button>
+            <button class="nav-item" onclick="showSection('profile')">👤 Perfil</button>
+        </div>
+
+        <div class="content">
+            <!-- Sección Reportar -->
+            <div id="reports" class="section">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="totalReports">12</span>
+                        <div class="stat-label">Reportes Enviados</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="resolvedReports">8</span>
+                        <div class="stat-label">Casos Resueltos</div>
+                    </div>
+                </div>
+
+                <form id="reportForm">
+                    <div class="form-group">
+                        <label for="reportType">Tipo de Reporte</label>
+                        <select id="reportType" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="unsafe-condition">Condición Insegura</option>
+                            <option value="unsafe-action">Acción Insegura</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Ubicación</label>
+                        <input type="text" id="location" placeholder="Ej: Almacén, Área de producción" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Descripción del Riesgo</label>
+                        <textarea id="description" rows="4" placeholder="Describe detalladamente la situación observada..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="severity">Nivel de Gravedad</label>
+                        <select id="severity" required>
+                            <option value="">Seleccionar gravedad</option>
+                            <option value="low">Bajo</option>
+                            <option value="medium">Medio</option>
+                            <option value="high">Alto</option>
+                            <option value="critical">Crítico</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">📤 Enviar Reporte</button>
+                </form>
+            </div>
+
+            <!-- Sección Historial -->
+            <div id="history" class="section hidden">
+                <div class="alert alert-info">
+                    <strong>Mis Reportes:</strong> Aquí puedes ver el estado de todos tus reportes enviados.
+                </div>
+                <div id="reportsList"></div>
+            </div>
+
+            <!-- Sección Gestionar (Solo Supervisores) -->
+            <div id="manage" class="section hidden">
+                <div class="alert alert-info">
+                    <strong>Panel de Supervisor:</strong> Gestiona los puntos de tu equipo basado en su comportamiento preventivo.
+                </div>
+                <div id="workersList"></div>
+            </div>
+
+            <!-- Sección Perfil -->
+            <div id="profile" class="section hidden">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number" id="profilePoints">85</span>
+                        <div class="stat-label">Puntos Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="profileRank">3°</span>
+                        <div class="stat-label">Ranking</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profileName">Nombre Completo</label>
+                    <input type="text" id="profileName" value="Juan Pérez">
+                </div>
+
+                <div class="form-group">
+                    <label for="profileArea">Área de Trabajo</label>
+                    <input type="text" id="profileArea" value="Producción">
+                </div>
+
+                <div class="form-group">
+                    <label for="profileRole">Rol</label>
+                    <select id="profileRole" onchange="updateRole()">
+                        <option value="worker">Trabajador</option>
+                        <option value="supervisor">Supervisor</option>
+                    </select>
+                </div>
+
+                <button type="button" class="btn" onclick="saveProfile()">💾 Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado de la aplicación
+        let currentUser = {
+            name: 'Juan Pérez',
+            role: 'worker',
+            points: 85,
+            area: 'Producción'
+        };
+
+        let reports = [
+            {
+                id: 1,
+                type: 'unsafe-condition',
+                location: 'Almacén Principal',
+                description: 'Charco de aceite en el suelo sin señalización',
+                severity: 'medium',
+                date: '2025-07-01',
+                status: 'resolved',
+                reporter: 'Juan Pérez'
+            },
+            {
+                id: 2,
+                type: 'unsafe-action',
+                location: 'Área de Soldadura',
+                description: 'Trabajador sin utilizar protección ocular',
+                severity: 'high',
+                date: '2025-07-02',
+                status: 'pending',
+                reporter: 'Juan Pérez'
+            }
+        ];
+
+        let workers = [
+            { id: 1, name: 'María González', area: 'Producción', points: 92 },
+            { id: 2, name: 'Carlos Rivera', area: 'Mantenimiento', points: 78 },
+            { id: 3, name: 'Ana López', area: 'Almacén', points: 95 },
+            { id: 4, name: 'Pedro Martínez', area: 'Soldadura', points: 68 }
+        ];
+
+        // Funciones de navegación
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            document.getElementById(sectionName).classList.remove('hidden');
+            event.target.classList.add('active');
+
+            if (sectionName === 'history') {
+                renderReports();
+            } else if (sectionName === 'manage') {
+                renderWorkers();
+            }
+        }
+
+        // Función para enviar reportes
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newReport = {
+                id: reports.length + 1,
+                type: document.getElementById('reportType').value,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                severity: document.getElementById('severity').value,
+                date: new Date().toISOString().split('T')[0],
+                status: 'pending',
+                reporter: currentUser.name
+            };
+
+            reports.unshift(newReport);
+            
+            // Añadir puntos por reportar
+            currentUser.points += 5;
+            updateUserInfo();
+            
+            // Mostrar mensaje de éxito
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success';
+            alertDiv.innerHTML = '✅ Reporte enviado exitosamente. Has ganado 5 puntos por contribuir a la seguridad.';
+            
+            const form = document.getElementById('reportForm');
+            form.parentNode.insertBefore(alertDiv, form);
+            
+            // Limpiar formulario
+            form.reset();
+            
+            // Quitar alerta después de 3 segundos
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+
+            updateStats();
+        });
+
+        // Función para renderizar reportes
+        function renderReports() {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '';
+
+            const userReports = reports.filter(report => report.reporter === currentUser.name);
+
+            if (userReports.length === 0) {
+                reportsList.innerHTML = '<div class="alert alert-info">No has enviado reportes aún.</div>';
+                return;
+            }
+
+            userReports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                
+                reportCard.innerHTML = `
+                    <div class="report-header">
+                        <span class="report-type ${report.type}">
+                            ${report.type === 'unsafe-condition' ? '⚠️ Condición Insegura' : '🚫 Acción Insegura'}
+                        </span>
+                        <span class="report-date">${formatDate(report.date)}</span>
+                    </div>
+                    <div class="report-description">
+                        <strong>📍 ${report.location}:</strong> ${report.description}
+                    </div>
+                    <div class="report-status">
+                        <span>Gravedad: <strong>${getSeverityText(report.severity)}</strong></span>
+                        <span class="status-badge ${report.status === 'pending' ? 'status-pending' : 'status-resolved'}">
+                            ${report.status === 'pending' ? '⏳ Pendiente' : '✅ Resuelto'}
+                        </span>
+                    </div>
+                `;
+                
+                reportsList.appendChild(reportCard);
+            });
+        }
+
+        // Función para renderizar trabajadores (solo supervisores)
+        function renderWorkers() {
+            const workersList = document.getElementById('workersList');
+            workersList.innerHTML = '';
+
+            workers.forEach(worker => {
+                const workerItem = document.createElement('div');
+                workerItem.className = 'worker-item';
+                
+                workerItem.innerHTML = `
+                    <div class="worker-info">
+                        <h3>${worker.name}</h3>
+                        <p>📍 ${worker.area}</p>
+                    </div>
+                    <div class="points-controls">
+                        <button class="points-btn subtract" onclick="updateWorkerPoints(${worker.id}, -5)">-</button>
+                        <span class="worker-points">${worker.points}</span>
+                        <button class="points-btn add" onclick="updateWorkerPoints(${worker.id}, 5)">+</button>
+                    </div>
+                `;
+                
+                workersList.appendChild(workerItem);
+            });
+        }
+
+        // Función para actualizar puntos de trabajadores
+        function updateWorkerPoints(workerId, points) {
+            const worker = workers.find(w => w.id === workerId);
+            if (worker) {
+                worker.points = Math.max(0, worker.points + points);
+                renderWorkers();
+                
+                // Mostrar notificación
+                const message = points > 0 ? 
+                    `✅ Se añadieron ${points} puntos a ${worker.name}` : 
+                    `⚠️ Se restaron ${Math.abs(points)} puntos a ${worker.name}`;
+                
+                showNotification(message);
+            }
+        }
+
+        // Funciones auxiliares
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES');
+        }
+
+        function getSeverityText(severity) {
+            const severityMap = {
+                'low': 'Bajo',
+                'medium': 'Medio',
+                'high': 'Alto',
+                'critical': 'Crítico'
+            };
+            return severityMap[severity] || severity;
+        }
+
+        function updateUserInfo() {
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role === 'worker' ? 'Trabajador' : 'Supervisor';
+            document.getElementById('userPoints').textContent = `${currentUser.points} pts`;
+            document.getElementById('profilePoints').textContent = currentUser.points;
+        }
+
+        function updateRole() {
+            const newRole = document.getElementById('profileRole').value;
+            currentUser.role = newRole;
+            
+            const manageTab = document.getElementById('manageTab');
+            if (newRole === 'supervisor') {
+                manageTab.style.display = 'block';
+            } else {
+                manageTab.style.display = 'none';
+            }
+            
+            updateUserInfo();
+        }
+
+        function saveProfile() {
+            currentUser.name = document.getElementById('profileName').value;
+            currentUser.area = document.getElementById('profileArea').value;
+            updateUserInfo();
+            showNotification('✅ Perfil actualizado correctamente');
+        }
+
+        function showNotification(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success';
+            alertDiv.textContent = message;
+            
+            const content = document.querySelector('.content');
+            content.insertBefore(alertDiv, content.firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        function updateStats() {
+            const totalReports = reports.filter(r => r.reporter === currentUser.name).length;
+            const resolvedReports = reports.filter(r => r.reporter === currentUser.name && r.status === 'resolved').length;
+            
+            document.getElementById('totalReports').textContent = totalReports;
+            document.getElementById('resolvedReports').textContent = resolvedReports;
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUserInfo();
+            updateStats();
+            
+            // Configurar rol inicial
+            document.getElementById('profileName').value = currentUser.name;
+            document.getElementById('profileArea').value = currentUser.area;
+            document.getElementById('profileRole').value = currentUser.role;
+            
+            // Registrar service worker para PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('data:text/javascript,console.log("SW registered")');
+            }
+        });
+    </script>
+</body>
+</html>
